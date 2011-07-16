@@ -1,0 +1,43 @@
+=pod
+
+=head1 Stashy - an inventory and management tool based on for (R)?ex
+
+Stashy is in a very early development stage. Comments and Suggestions are welcome :)
+
+=head1 Installation
+
+You need (R)?ex, Mojolicious, DM4P and a MySQL Database.
+
+Install (R)?ex from  here L<http://rexify.org/get/>. 
+
+Install Stashy-web from here L<https://github.com/krimdomu/stashy-web>.
+
+Install Mojolicious via CPAN (see here: L<http://mojolicio.us>).
+
+Install DM4P and DM4P/MySQL from L<https://github.com/krimdomu/dm4p> and L<https://github.com/krimdomu/dm4p-adapter-mysql>.
+
+Clone this repository and edit the file I<Rexfile>
+
+ git clone git://github.com/krimdomu/stashy-cli.git
+
+
+
+Edit the file I<lib/Stashy.pm>
+
+ # define database
+ use Rex::Commands::DB {
+                        dsn => "DBI:mysql:database=stashy;host=localhost",
+                        user => "stashy",
+                        password => "stashy",
+                     };
+  
+ # define user and password / keys
+ user "root";
+   
+ # define servers to inventor
+ group "inventory" => "dbuild01", "ctest64", "mango";
+
+Start an inventory run:
+
+ rex inventor
+
