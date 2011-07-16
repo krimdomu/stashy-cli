@@ -23,6 +23,7 @@ use Stashy::Commons;
 use strict;
 use warnings;
 
+desc "Get inventory of the server";
 task "inventor", group => "inventory", sub {
 
    my $inventory = inventor;
@@ -120,7 +121,28 @@ task "inventor", group => "inventory", sub {
        }
 
     }
+
+    for my $pkg (installed_packages()) {
+        db insert => "software", {
+                           systems_id => $system_id,
+                           name => $pkg->{"name"},
+                           version => $pkg->{"version"},
+                        };
+    }
        
    }
 
 };
+
+desc "Empty all tables";
+task "clean", sub {
+   
+   for my $table (qw/baseboard cpus dimms network_device_configuration network_devices software systems/) {
+      db delete => $table, { where => "id > 0" };
+   }
+
+};
+
+desc "Run everything";
+batch all => "clean", "inventor";
+
