@@ -24,7 +24,7 @@ use strict;
 use warnings;
 
 desc "Get inventory of the server";
-task "inventor", group => "inventory", sub {
+task "inventory", group => "inventory", sub {
 
    my $inventory = inventor;
    my $host_info = $inventory->{"configuration"}->{"host"};
@@ -144,5 +144,5 @@ task "clean", sub {
 };
 
 desc "Run everything";
-batch all => "clean", "inventor";
+batch all => "clean", "inventory";
 
