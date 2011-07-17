@@ -100,6 +100,32 @@ LOCK TABLES `dimms` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `memarrays`
+--
+
+DROP TABLE IF EXISTS `memarrays`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `memarrays` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `systems_id` int(10) unsigned DEFAULT NULL,
+  `maximum` int(10) unsigned DEFAULT NULL,
+  `slots` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `systems_id` (`systems_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `memarrays`
+--
+
+LOCK TABLES `memarrays` WRITE;
+/*!40000 ALTER TABLE `memarrays` DISABLE KEYS */;
+/*!40000 ALTER TABLE `memarrays` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `network_device_configuration`
 --
 
@@ -183,6 +209,35 @@ LOCK TABLES `software` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `storages`
+--
+
+DROP TABLE IF EXISTS `storages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `storages` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `systems_id` int(10) unsigned DEFAULT NULL,
+  `bus` varchar(50) DEFAULT NULL,
+  `dev` varchar(50) DEFAULT NULL,
+  `product` varchar(100) DEFAULT NULL,
+  `vendor` varchar(100) DEFAULT NULL,
+  `size` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `systems_id` (`systems_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `storages`
+--
+
+LOCK TABLES `storages` WRITE;
+/*!40000 ALTER TABLE `storages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `storages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `systems`
 --
 
@@ -223,4 +278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-07-16 22:46:55
+-- Dump completed on 2011-07-17 15:02:53

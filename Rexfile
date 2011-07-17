@@ -11,7 +11,7 @@ use Rex::Commands::DB {
 user "root";
 
 # define servers to inventor
-group "inventory" => "dbuild01", "ctest64", "mango";
+group "inventory" => "dbuild01", "ctest64", "mango", "mgmtserver.icom.lan";
 
 use Data::Dumper;
 use Rex::Commands::Inventory;
@@ -27,14 +27,17 @@ desc "Get inventory of the server";
 task "inventory", group => "inventory", sub {
 
    my $inventory = inventor;
+
    my $host_info = $inventory->{"configuration"}->{"host"};
 
    my $osrelease = Rex::Hardware::Host->get_operating_system_version();
 
+   my ($hostname) = split(/\./, $host_info->{"name"});
+
    my @s = db select => {
                fields => "id",
                from   => "systems",
-               where  => "hostname='" . $host_info->{"name"} . "' AND domainname='" . $host_info->{"domain"} . "'"
+               where  => "hostname='" . $hostname . "' AND domainname='" . $host_info->{"domain"} . "'"
             };
    my $in_db = @s?1:0;
 
@@ -42,7 +45,7 @@ task "inventory", group => "inventory", sub {
    if(! $in_db) {
 
       db insert => "systems", {
-                        hostname => $host_info->{"name"},
+                        hostname => $hostname,
                         domainname => $host_info->{"domain"},
                         added => datetime(),
                         os => get_operating_system(),
@@ -53,7 +56,7 @@ task "inventory", group => "inventory", sub {
       my @sys = db select => {
                fields => "id",
                from   => "systems",
-               where  => "hostname='" . $host_info->{"name"} . "' AND domainname='" . $host_info->{"domain"} . "'"
+               where  => "hostname='" . $hostname . "' AND domainname='" . $host_info->{"domain"} . "'"
             };
 
       my $system_id = $sys[0]->{"id"};
@@ -129,15 +132,37 @@ task "inventory", group => "inventory", sub {
                            version => $pkg->{"version"},
                         };
     }
+
+    my $mem_arrays = $inventory->{"mem_arrays"};
+      for my $mem_arr (@{$mem_arrays}) {
+         my ($max) = ($mem_arr->{"maximum_capacity"} =~ m/^(\d+)/);
+         db insert => "memarrays", {
+                           systems_id => $system_id,
+                           maximum => $max,
+                           slots => $mem_arr->{"number_of_devices"},
+                        };
+      }
        
+    my $storages = $inventory->{"storage"};
+      for my $st (@{$storages}) {
+         db insert => "storages", {
+                           systems_id => $system_id,
+                           bus => $st->{"bus"},
+                           dev => $st->{"dev"},
+                           product => $st->{"product"},
+                           vendor => $st->{"vendor"},
+                           size => $st->{"size"},
+                        };
+      }
    }
+   
 
 };
 
 desc "Empty all tables";
 task "clean", sub {
    
-   for my $table (qw/baseboard cpus dimms network_device_configuration network_devices software systems/) {
+   for my $table (qw/baseboard cpus dimms network_device_configuration network_devices software systems memarrays/) {
       db delete => $table, { where => "id > 0" };
    }
 
