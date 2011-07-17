@@ -11,7 +11,7 @@ use Rex::Commands::DB {
 user "root";
 
 # define servers to inventor
-group "inventory" => "dbuild01", "ctest64", "mango", "mgmtserver.icom.lan";
+group "inventory" => "dbuild01", "ctest64", "mango", "mgmtserver";
 
 use Data::Dumper;
 use Rex::Commands::Inventory;
