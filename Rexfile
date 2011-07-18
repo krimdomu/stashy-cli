@@ -26,7 +26,9 @@ use warnings;
 desc "Get inventory of the server";
 task "inventory", group => "inventory", sub {
 
-   my $inventory = inventor;
+   my $inventory = inventory;
+   #print Dumper($inventory);
+   #exit;
 
    my $host_info = $inventory->{"configuration"}->{"host"};
 
@@ -145,6 +147,7 @@ task "inventory", group => "inventory", sub {
        
     my $storages = $inventory->{"storage"};
       for my $st (@{$storages}) {
+         next unless $st->{"dev"}; # skip everything without a device
          db insert => "storages", {
                            systems_id => $system_id,
                            bus => $st->{"bus"},
@@ -154,8 +157,59 @@ task "inventory", group => "inventory", sub {
                            size => $st->{"size"},
                         };
       }
-   }
+
+   my $raid_controller = $inventory->{"raid"}->{"controller"};
+      for my $ctrl (@{$raid_controller}) {
+         db insert => "raidcontroller", {
+                           systems_id => $system_id,
+                           serial_number => $ctrl->{"serial_number"},
+                           type => $ctrl->{"type"},
+                           model => $ctrl->{"model"},
+                           cache_status => $ctrl->{"cache_status"},
+                        };
+         my ($ctrl_in_db) = db select => {
+                           fields => "id",
+                           from => "raidcontroller",
+                           where => "systems_id=$system_id AND serial_number = '" . $ctrl->{"serial_number"} . "'",
+                        };
+
+         if($ctrl_in_db) {
+            for my $shelf (keys %{$ctrl->{"shelfs"}}) {
+               db insert => "raidshelfs", {
+                           raidcontroller_id => $ctrl_in_db->{"id"},
+                           type => $ctrl->{"shelfs"}->{$shelf}->{"type"},
+                           status => $ctrl->{"shelfs"}->{$shelf}->{"status"},
+                        };
+
+               my ($shelf_in_db) = db select => {
+                                       fields => "id",
+                                       from => "raidshelfs",
+                                       where => "raidcontroller_id=" . $ctrl_in_db->{"id"},
+                                       order => "id DESC",
+                                    };
+
+               if($shelf_in_db) {
+                  for my $ld (@{$ctrl->{"shelfs"}->{$shelf}->{"logical_drives"}}) {
+                     db insert => "raidvolumes", {
+                                 raidshelf_id => $shelf_in_db->{"id"},
+                                 dev => $ld->{"dev"},
+                                 raid_level => $ld->{"raid_level"},
+                                 status => $ld->{"status"},
+                                 size => $ld->{"size"},
+                              };
+                  }
+               }
+               else {
+                  die("Shelf not found :(");
+               }
+            }
+         }
+         else {
+            die("Controller not found :(");
+         }
+      }
    
+   } # end if
 
 };
 
