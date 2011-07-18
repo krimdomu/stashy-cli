@@ -182,6 +182,88 @@ LOCK TABLES `network_devices` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `raidcontroller`
+--
+
+DROP TABLE IF EXISTS `raidcontroller`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `raidcontroller` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `systems_id` int(10) unsigned DEFAULT NULL,
+  `type` varchar(100) DEFAULT NULL,
+  `model` varchar(100) DEFAULT NULL,
+  `serial_number` varchar(100) DEFAULT NULL,
+  `cache_status` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `systems_id` (`systems_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `raidcontroller`
+--
+
+LOCK TABLES `raidcontroller` WRITE;
+/*!40000 ALTER TABLE `raidcontroller` DISABLE KEYS */;
+/*!40000 ALTER TABLE `raidcontroller` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `raidshelfs`
+--
+
+DROP TABLE IF EXISTS `raidshelfs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `raidshelfs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `raidcontroller_id` int(10) unsigned DEFAULT NULL,
+  `type` varchar(100) DEFAULT NULL,
+  `status` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `raidcontroller_id` (`raidcontroller_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `raidshelfs`
+--
+
+LOCK TABLES `raidshelfs` WRITE;
+/*!40000 ALTER TABLE `raidshelfs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `raidshelfs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `raidvolumes`
+--
+
+DROP TABLE IF EXISTS `raidvolumes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `raidvolumes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `raidshelf_id` int(10) unsigned DEFAULT NULL,
+  `dev` varchar(100) DEFAULT NULL,
+  `raid_level` varchar(50) DEFAULT NULL,
+  `status` tinyint(3) unsigned DEFAULT NULL,
+  `size` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `raidshelf_id` (`raidshelf_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `raidvolumes`
+--
+
+LOCK TABLES `raidvolumes` WRITE;
+/*!40000 ALTER TABLE `raidvolumes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `raidvolumes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `software`
 --
 
@@ -278,4 +360,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-07-17 15:02:53
+-- Dump completed on 2011-07-18 19:25:34
